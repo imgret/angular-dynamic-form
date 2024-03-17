@@ -1,0 +1,32 @@
+<p>template-builder works!</p>
+
+@if (template$ | async; as template) {
+  <div [formGroup]="template.form">
+    <h4>{{ template.title }}</h4>
+    @for (component of template.components; track component.identifier) {
+      <ng-container [formGroupName]="component.identifier">
+        <p>{{ component.type }}</p>
+        <!-- TODO: use *ngComponentOutlet with custom components (per component type) instead of if statements -->
+        <!-- TODO: Dynamically add/remove components from the template via TemplateManagerService -->
+        @if (component.isTextComponent()) {
+          <input type="text" formControlName="value" />
+          <label
+            [for]="component.identifier + '_mode'"
+            [style.marginInline]="'12px 2px'"
+          >
+            Toggle mode
+          </label>
+          <select formControlName="mode" [id]="component.identifier + '_mode'">
+            <option value="FIXED">Fixed</option>
+            <option value="EDITABLE">Editable</option>
+          </select>
+        } @else if (component.isImageComponent()) {
+          <input type="text" formControlName="url" />
+        }
+      </ng-container>
+    }
+  </div>
+  <div>
+    <p>{{ template.form.value | json }}</p>
+  </div>
+}
